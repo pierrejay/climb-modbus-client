@@ -1,0 +1,295 @@
+/* Thème clair (original) */
+:root {
+    --bg-color: #f5f7fa;
+    --text-color: #333;
+    --container-bg: #ffffff;
+    --input-border: #bdc3c7;
+    --button-bg: #3498db;
+    --button-hover: #2980b9;
+    --row-bg: #f8f9fa;
+    --row-bg-alt: #e9ecef;
+    --terminal-bg: #2c3e50;
+    --terminal-text: #ecf0f1;
+    --h1-color: #2c3e50;
+    --register-name-color: #34495e;
+    --connection-panel-bg: #ecf0f1;
+    --read-button-bg: #2ecc71;
+    --read-button-hover: #27ae60;
+    --write-button-bg: #e67e22;
+    --write-button-hover: #d35400;
+    --connect-button-bg: #4CAF50;
+    --connect-button-hover: #45a049;
+    --disconnect-button-bg: #f44336;
+    --disconnect-button-hover: #d32f2f;
+}
+
+/* Thème sombre */
+.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-color: #f0f0f0;
+    --container-bg: #2c2c2c;
+    --input-border: #4a4a4a;
+    --button-bg: #2980b9;
+    --button-hover: #3498db;
+    --row-bg: #3a3a3a;
+    --row-bg-alt: #444444;
+    --terminal-bg: #1c2833;
+    --terminal-text: #ecf0f1;
+    --h1-color: #ecf0f1;
+    --register-name-color: #bdc3c7;
+    --connection-panel-bg: #34495e;
+    --read-button-bg: #27ae60;
+    --read-button-hover: #2ecc71;
+    --write-button-bg: #d35400;
+    --write-button-hover: #e67e22;
+    --connect-button-bg: #2ecc71;
+    --connect-button-hover: #27ae60;
+    --disconnect-button-bg: #e74c3c;
+    --disconnect-button-hover: #c0392b;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 12px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--container-bg);
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: var(--h1-color);
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.connection-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px; /* Réduit de 5px à 2px */
+    margin-bottom: 10px;
+    background-color: var(--connection-panel-bg);
+    padding: 5px;
+    border-radius: 4px;
+}
+
+input, select, button {
+    padding: 3px 4px; /* Réduit de 3px 6px à 3px 4px */
+    margin: 0 1px; /* Réduit de 0 2px à 0 1px */
+    border: 1px solid var(--input-border);
+    border-radius: 3px;
+    font-size: 11px;
+    background-color: var(--container-bg);
+    color: var(--text-color);
+}
+
+button {
+    background-color: var(--button-bg);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border: none;
+}
+
+button:hover {
+    background-color: var(--button-hover);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.modbus-panel {
+    margin-top: 10px;
+}
+
+.modbus-row {
+    display: grid;
+    grid-template-columns: 150px 70px 50px 70px 50px 30px auto;
+    gap: 3px;
+    align-items: center;
+    padding: 5px;
+    background-color: var(--row-bg);
+    border-radius: 3px;
+    margin-bottom: 3px;
+}
+
+.modbus-row:nth-child(even) {
+    background-color: var(--row-bg-alt);
+}
+
+.register-name {
+    font-weight: bold;
+    color: var(--register-name-color);
+    font-size: 11px;
+}
+
+.registerInput, .valueInput {
+    width: 60px;
+}
+
+.result {
+    justify-self: start;
+    font-weight: bold;
+    color: var(--register-name-color);
+    font-size: 11px;
+}
+
+#terminal-label {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--register-name-color);
+}
+
+#terminal {
+    padding: 5px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    background-color: var(--terminal-bg);
+    color: var(--terminal-text);
+    height: 120px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    font-size: 11px;
+}
+
+.readButton, .writeButton {
+    padding: 3px 6px;
+    min-width: 40px;
+    font-size: 11px;
+}
+
+.readButton {
+    background-color: var(--read-button-bg);
+}
+
+.readButton:hover {
+    background-color: var(--read-button-hover);
+}
+
+.writeButton {
+    background-color: var(--write-button-bg);
+}
+
+.writeButton:hover {
+    background-color: var(--write-button-hover);
+}
+
+#connectButton {
+    background-color: var(--connect-button-bg);
+}
+
+#connectButton:hover {
+    background-color: var(--connect-button-hover);
+}
+
+#connectButton.disconnectButton {
+    background-color: var(--disconnect-button-bg);
+}
+
+#connectButton.disconnectButton:hover {
+    background-color: var(--disconnect-button-hover);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#themeToggle {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+#themeToggle:hover {
+    background-color: var(--button-hover);
+}
+
+.spacer {
+    height: 20px;
+}
+
+.settings-label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: var(--register-name-color);
+}
+
+.tcp-label, .rtu-label {
+    display: inline-block;
+    width: 60px; /* Augmenté de 40px à 60px pour accommoder le texte plus long */
+    text-align: right;
+    margin-right: 2px;
+    white-space: nowrap; /* Empêche le retour à la ligne */
+    overflow: hidden; /* Cache le texte qui dépasse */
+    text-overflow: ellipsis; /* Ajoute des points de suspension si le texte est trop long */
+}
+
+.favorites-panel {
+    align-items: left;
+    gap: 5px;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: var(--container-bg);
+    border-radius: 4px;
+}
+
+#favoritesSelect {
+    flex-grow: 1;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+}
+
+.timeout {
+    color: #ff0000;
+    font-weight: bold;
+}
+
+.error-text {
+    color: red;
+    font-weight: bold;
+}
+
+/* Ajoutez ces nouvelles règles pour réduire la largeur des champs TCP */
+#addressInput {
+    width: 120px;
+}
+
+#tcpPortInput {
+    width: 50px;
+}
+
+#slaveIdInput {
+    width: 40px;
+}

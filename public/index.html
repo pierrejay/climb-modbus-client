@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>climb</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>climb - Simple Modbus client</h1>
+            <button id="themeToggle">🌙</button>
+        </div>
+        <div class="favorites-panel">
+            <select id="favoritesSelect">
+                <option value="">Favorites</option>
+            </select>
+            <button id="addFavoriteButton">+</button>
+            <button id="removeFavoriteButton">-</button>
+        </div>
+        <div class="connection-panel">
+            <select id="modeSelect">
+                <option value="TCP">TCP</option>
+                <option value="RTU">RTU</option>
+            </select>
+            <span class="settings-label tcp-label">IP:</span>
+            <input type="text" id="addressInput" placeholder="IP Address">
+            <span class="settings-label tcp-label">Port:</span>
+            <input type="text" id="tcpPortInput" placeholder="TCP Port" value="502">
+            <span class="settings-label tcp-label">Unit ID:</span>
+            <span class="settings-label rtu-label" style="display: none;">COM Port:</span>
+            <select id="portSelect" style="display: none;">
+                <option value="">Select a port</option>
+            </select>
+            <span class="settings-label rtu-label" style="display: none;">Slave ID:</span>
+            <input type="number" id="slaveIdInput" placeholder="Slave/Unit ID" value="1">
+            <button id="connectButton">Connect</button>
+        </div>
+        <div id="rtuSettings" style="display: none;">
+            <span class="settings-label">RTU settings:</span>
+            <select id="baudRate">
+                <option value="9600">9600</option>
+                <option value="19200">19200</option>
+                <option value="38400">38400</option>
+                <option value="57600">57600</option>
+                <option value="115200">115200</option>
+            </select>
+            <select id="dataBits">
+                <option value="8">8</option>
+                <option value="7">7</option>
+            </select>
+            <select id="parity">
+                <option value="none">None</option>
+                <option value="even">Even</option>
+                <option value="odd">Odd</option>
+            </select>
+            <select id="stopBits">
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+            <span class="settings-label">Timeout:</span>
+            <input type="number" id="timeout" placeholder="Timeout (ms)" value="1000">
+        </div>
+        <div class="spacer"></div>
+        <div class="modbus-panel">
+            <div class="modbus-row">
+                <span class="register-name">Coils (01, 05)</span>
+                <input type="number" class="registerInput" placeholder="Register">
+                <button class="readButton">Read</button>
+                <input type="number" class="valueInput" placeholder="Value">
+                <button class="writeButton">Write</button>
+                <span></span>
+                <span class="result"></span>
+            </div>
+            <div class="modbus-row">
+                <span class="register-name">Discrete Inputs (02)</span>
+                <input type="number" class="registerInput" placeholder="Register">
+                <button class="readButton">Read</button>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span class="result"></span>
+            </div>
+            <div class="modbus-row">
+                <span class="register-name">Input Registers (04)</span>
+                <input type="number" class="registerInput" placeholder="Register">
+                <button class="readButton">Read</button>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span class="result"></span>
+            </div>
+            <div class="modbus-row">
+                <span class="register-name">Holding Registers (03, 06)</span>
+                <input type="number" class="registerInput" placeholder="Register">
+                <button class="readButton">Read</button>
+                <input type="number" class="valueInput" placeholder="Value">
+                <button class="writeButton">Write</button>
+                <span></span>
+                <span class="result"></span>
+            </div>
+        </div>
+        <div id="terminal-label">Log:</div>
+        <div id="terminal"></div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
