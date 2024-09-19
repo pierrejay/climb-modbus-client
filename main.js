@@ -2,36 +2,65 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const createServer = require('./server');
 const Store = require('electron-store');
+const net = require('net');
 
 const store = new Store();
 console.log('Store initialisé:', store);
 
-// Ajoutez ceci au début du fichier, juste après les imports
 process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    // Application specific logging, throwing an error, or other logic here
 });
 
-function createWindow() {
+const PORTS = [3003, 3004, 3005, 3006, 3007]; // Liste des ports à essayer
+
+function isPortAvailable(port) {
+    return new Promise((resolve) => {
+        const server = net.createServer();
+        server.once('error', () => {
+            resolve(false);
+        });
+        server.once('listening', () => {
+            server.close();
+            resolve(true);
+        });
+        server.listen(port);
+    });
+}
+
+async function findAvailablePort() {
+    for (const port of PORTS) {
+        if (await isPortAvailable(port)) {
+            return port;
+        }
+    }
+    throw new Error('Aucun port disponible trouvé');
+}
+
+async function createWindow() {
     const win = new BrowserWindow({
-        width: 620, // Augmenté de 600 à 620
-        height: 550, // Augmenté de 520 à 550
+        width: 620,
+        height: 550,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
         },
-        resizable: true, // Permet à l'utilisateur de redimensionner la fenêtre si nécessaire
-        autoHideMenuBar: true, // Cache la barre de menu par défaut pour gagner de l'espace
+        resizable: true,
+        autoHideMenuBar: true,
         icon: path.join(__dirname, 'assets', process.platform === 'darwin' ? 'icon.icns' : process.platform === 'win32' ? 'icon.ico' : 'icon.png')
     });
 
-    const { server } = createServer(store);
+    try {
+        const PORT = await findAvailablePort();
+        const { server } = createServer(store);
 
-    const PORT = 3003; // Assurez-vous que ce port correspond à celui utilisé dans votre client
-    server.listen(PORT, () => {
-        console.log(`Serveur en écoute sur le port ${PORT}`);
-        win.loadURL(`http://localhost:${PORT}`);
-    });
+        server.listen(PORT, () => {
+            console.log(`Serveur en écoute sur le port ${PORT}`);
+            win.loadURL(`http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('Erreur lors du démarrage du serveur:', error);
+        app.quit();
+    }
 }
 
 app.whenReady().then(createWindow);

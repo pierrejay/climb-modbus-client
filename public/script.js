@@ -23,11 +23,12 @@ themeToggle.addEventListener('click', toggleTheme);
 let socket;
 try {
     console.log('Attempting to connect to WebSocket server...');
-    socket = io('http://localhost:3003');
+    socket = io(window.location.origin);
     console.log('Socket object created:', socket);
 } catch (error) {
     console.error('Error creating WebSocket connection:', error);
 }
+
 
 if (socket) {
     socket.on('connect', () => {
@@ -108,6 +109,11 @@ socket.on('portList', (ports) => {
     });
 });
 
+// Ajoutez ces variables au début du fichier
+let connectionTimeout;
+const CONNECTION_TIMEOUT = 5000; // 5 secondes
+
+// Modifiez la fonction de clic du bouton de connexion
 connectButton.addEventListener('click', () => {
     console.log('Connect button clicked');
     if (!connected) {
@@ -118,17 +124,17 @@ connectButton.addEventListener('click', () => {
         const timeout = parseInt(document.getElementById('timeout').value) || 1000;
 
         if (mode === 'TCP' && !address) {
-            alert('Please enter an IP address');
+            alert('Veuillez entrer une adresse IP');
             return;
         }
 
         if (mode === 'RTU' && !port) {
-            alert('Please select a COM port');
+            alert('Veuillez sélectionner un port COM');
             return;
         }
 
         if (!slaveId || isNaN(parseInt(slaveId))) {
-            alert('Please enter a valid Slave/Unit ID');
+            alert('Veuillez entrer un ID Esclave/Unité valide');
             return;
         }
 
@@ -143,15 +149,61 @@ connectButton.addEventListener('click', () => {
             parity: document.getElementById('parity').value,
             stopBits: parseInt(document.getElementById('stopBits').value)
         };
-        console.log('Connection data:', connectionData);
+        console.log('Données de connexion:', connectionData);
         socket.emit('connect_modbus', connectionData);
-        console.log('Modbus connection event emitted');
+        console.log('Événement de connexion Modbus émis');
+
+        // Définir le timeout de connexion
+        connectionTimeout = setTimeout(() => {
+            console.log('Timeout de connexion atteint');
+            updateUIAfterDisconnection();
+            alert("L'hôte ne répond pas. La connexion a échoué.");
+        }, CONNECTION_TIMEOUT);
+
     } else {
-        console.log('Modbus disconnection requested');
+        console.log('Déconnexion Modbus demandée');
         socket.emit('disconnect_modbus');
-        console.log('Modbus disconnection event emitted');
+        console.log('Événement de déconnexion Modbus émis');
+
+        // Définir le timeout de déconnexion
+        connectionTimeout = setTimeout(() => {
+            console.log('Timeout de déconnexion atteint');
+            updateUIAfterDisconnection();
+        }, CONNECTION_TIMEOUT);
     }
 });
+
+// Modifiez la fonction de gestion du statut de connexion
+socket.on('connectionStatus', (status) => {
+    console.log('Statut de connexion reçu:', status);
+    clearTimeout(connectionTimeout); // Effacer le timeout existant
+    connected = status;
+    connectButton.textContent = connected ? 'Déconnecter' : 'Connecter';
+    if (connected) {
+        connectButton.classList.add('disconnectButton');
+    } else {
+        connectButton.classList.remove('disconnectButton');
+    }
+});
+
+// Modifiez la fonction de gestion des erreurs de connexion
+socket.on('connectionError', (errorMessage) => {
+    console.error('Erreur de connexion:', errorMessage);
+    clearTimeout(connectionTimeout); // Effacer le timeout existant
+    alert('Erreur de connexion: ' + errorMessage);
+    updateUIAfterDisconnection();
+});
+
+// Modifiez la fonction updateUIAfterDisconnection
+function updateUIAfterDisconnection() {
+    document.querySelectorAll('.result').forEach(resultSpan => {
+        resultSpan.textContent = '';
+    });
+    terminal.innerHTML = '';
+    connected = false;
+    connectButton.textContent = 'Connecter';
+    connectButton.classList.remove('disconnectButton');
+}
 
 // Ajoutez cette ligne au début du fichier, juste après les autres déclarations de variables
 const style = document.createElement('style');
@@ -243,36 +295,6 @@ document.querySelectorAll('.modbus-row').forEach(row => {
         });
     }
 });
-
-socket.on('connectionStatus', (status) => {
-    console.log('Connection status received:', status);
-    connected = status;
-    connectButton.textContent = connected ? 'Disconnect' : 'Connect';
-    if (connected) {
-        connectButton.classList.add('disconnectButton');
-    } else {
-        connectButton.classList.remove('disconnectButton');
-    }
-    // Pas besoin d'appeler updateUIAfterDisconnection ici
-});
-
-socket.on('connectionError', (errorMessage) => {
-    console.error('Connection error:', errorMessage);
-    alert('Connection error: ' + errorMessage);
-    // Réinitialiser l'état de connexion et l'interface utilisateur
-    connected = false;
-    connectButton.textContent = 'Connect';
-    connectButton.classList.remove('disconnectButton');
-    updateUIAfterDisconnection();
-});
-
-function updateUIAfterDisconnection() {
-    document.querySelectorAll('.result').forEach(resultSpan => {
-        resultSpan.textContent = '';
-    });
-    terminal.innerHTML = '';
-    connected = false;
-}
 
 socket.on('readResult', (data) => {
     console.log('Read result received:', data);
