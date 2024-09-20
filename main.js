@@ -39,12 +39,14 @@ async function findAvailablePort() {
 async function createWindow() {
     const win = new BrowserWindow({
         width: 620,
-        height: 550,
+        minWidth: 620,
+        height: 520,
+        minHeight:520,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
         },
-        resizable: true,
+        resizable: false,
         autoHideMenuBar: true,
         icon: path.join(__dirname, 'assets', process.platform === 'darwin' ? 'icon.icns' : process.platform === 'win32' ? 'icon.ico' : 'icon.png')
     });
