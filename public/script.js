@@ -267,6 +267,16 @@ socket.on('connectionError', (errorMessage) => {
     updateUIAfterDisconnection();
 });
 
+socket.on('disconnectionError', (errorMessage) => {
+    console.error('Disconnection error:', errorMessage);
+    alert(errorMessage);
+    // Réinitialiser l'état de connexion et l'interface utilisateur
+    connected = false;
+    connectButton.textContent = 'Connect';
+    connectButton.classList.remove('disconnectButton');
+    updateUIAfterDisconnection();
+});
+
 function updateUIAfterDisconnection() {
     document.querySelectorAll('.result').forEach(resultSpan => {
         resultSpan.textContent = '';

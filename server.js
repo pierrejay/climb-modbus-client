@@ -5,6 +5,8 @@ const ModbusRTU = require('modbus-serial');
 const { SerialPort } = require('serialport');
 const path = require('path');
 
+const CONNECTION_TIMEOUT = 5000; // 5 secondes de timeout
+
 function createServer(store) {
     const expressApp = express();
     const server = http.createServer(expressApp);
@@ -163,7 +165,11 @@ function createServer(store) {
                     if (!data.address) {
                         throw new Error('Please select IP Address');
                     }
-                    await client.connectTCP(data.address, { port: parseInt(data.port) || 502 });
+                    const connectionPromise = client.connectTCP(data.address, { port: parseInt(data.port) || 502 });
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Connection timeout')), CONNECTION_TIMEOUT)
+                    );
+                    await Promise.race([connectionPromise, timeoutPromise]);
                     console.log('TCP connection established');
                     connectionType = 'TCP';
                 } else {
@@ -194,6 +200,8 @@ function createServer(store) {
                 let errorMessage = error.message;
                 if (error.code === 'ENOTFOUND') {
                     errorMessage = 'Incorrect IP Address';
+                } else if (error.message === 'Connection timeout') {
+                    errorMessage = 'Server not responding';
                 }
                 socket.emit('connectionError', errorMessage);
             }
@@ -202,12 +210,28 @@ function createServer(store) {
         socket.on('disconnect_modbus', () => {
             console.log('Modbus disconnection request received');
             if (connected) {
-                client.close(() => {
-                    connected = false;
-                    currentRTUPath = '';
-                    socket.emit('connectionStatus', false);
-                    console.log('Disconnected from Modbus server');
+                const disconnectionPromise = new Promise((resolve) => {
+                    client.close(() => {
+                        connected = false;
+                        currentRTUPath = '';
+                        resolve();
+                    });
                 });
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Disconnection timeout')), CONNECTION_TIMEOUT)
+                );
+                Promise.race([disconnectionPromise, timeoutPromise])
+                    .then(() => {
+                        socket.emit('connectionStatus', false);
+                        console.log('Disconnected from Modbus server');
+                    })
+                    .catch((error) => {
+                        console.error('Error during disconnection:', error);
+                        connected = false;
+                        currentRTUPath = '';
+                        socket.emit('connectionStatus', false);
+                        socket.emit('disconnectionError', 'Disconnection failed: server not responding. You are now disconnected.');
+                    });
             } else {
                 console.log('Already disconnected');
                 socket.emit('connectionStatus', false);
