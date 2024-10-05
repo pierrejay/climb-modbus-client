@@ -420,4 +420,16 @@ function createServer(store) {
     return { expressApp, server, io };
 }
 
+// Ajoutez ces lignes à la fin du fichier
+if (require.main === module) {
+    const port = process.argv[2] || 3000;
+    const { server } = createServer({
+        get: () => [],
+        set: () => {}
+    });
+    server.listen(port, () => {
+        console.log(`Serveur démarré sur le port ${port}`);
+    });
+}
+
 module.exports = createServer;
