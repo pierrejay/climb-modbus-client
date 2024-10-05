@@ -48,7 +48,6 @@ async function createWindow() {
         },
         resizable: false,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, 'assets', process.platform === 'darwin' ? 'icon.icns' : process.platform === 'win32' ? 'icon.ico' : 'icon.png')
     });
 
     try {
